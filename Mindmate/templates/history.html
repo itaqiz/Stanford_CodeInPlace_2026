@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Mood History{% endblock %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+
+        <div class="mb-4 anim-fade-up">
+          <p class="mm-section-label">Your Emotional Log</p>
+          <h1 class="mm-heading" style="font-size: 2rem;">Mood History</h1>
+          <p class="mm-subtext">Your recent check-ins, newest first. Patterns reveal growth.</p>
+        </div>
+
+        {% if history %}
+          {% for entry in history %}
+          <div class="mm-card mb-3 anim-fade-up" style="animation-delay: {{ loop.index * 0.06 }}s; opacity: 0;">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-3">
+                <span style="font-size: 1.75rem;">{{ entry.emoji }}</span>
+                <div>
+                  <div class="fw-600 text-navy" style="font-size: 0.95rem;">{{ entry.label }}</div>
+                  <div class="font-mono" style="font-size: 0.72rem; color: var(--mm-text-light);">{{ entry.timestamp }}</div>
+                </div>
+              </div>
+              <a href="{{ url_for('result', mood=entry.mood) }}" class="mm-nav-link" style="font-size: 0.78rem;">
+                View <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+
+        {% else %}
+          <div class="mm-card text-center py-5 anim-fade-up">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem;">📋</div>
+            <h6 class="text-navy mb-2">No check-ins yet</h6>
+            <p class="mm-subtext mb-3">Start your first mood check-in to build your history.</p>
+            <a href="{{ url_for('checkin') }}" class="btn-mm-primary">Start Check-in</a>
+          </div>
+        {% endif %}
+
+        {% if history %}
+        <div class="text-center mt-4">
+          <a href="{{ url_for('checkin') }}" class="btn-mm-primary">
+            <i class="bi bi-plus-circle me-2"></i>New Check-in
+          </a>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}Mood Check-in{% endblock %}
+
+{% block extra_styles %}
+.mood-option input[type="radio"] { display: none; }
+
+.mood-card {
+  cursor: pointer;
+  border: 2px solid var(--mm-border);
+  border-radius: var(--mm-radius);
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+  background: var(--mm-surface);
+  transition: all 0.22s ease;
+  box-shadow: var(--mm-shadow);
+  user-select: none;
+}
+
+.mood-card:hover {
+  border-color: var(--mm-navy);
+  transform: translateY(-3px);
+  box-shadow: var(--mm-shadow-md);
+}
+
+.mood-option input[type="radio"]:checked + .mood-card {
+  border-color: var(--mm-cyan-soft);
+  background: var(--mm-calm-blue);
+  box-shadow: 0 0 0 4px rgba(0, 194, 255, 0.12);
+  transform: translateY(-3px);
+}
+
+.mood-option input[type="radio"]:checked + .mood-card .mood-check {
+  opacity: 1;
+}
+
+.mood-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--mm-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: var(--mm-navy);
+  font-size: 0.65rem;
+}
+
+.mood-emoji { font-size: 2.4rem; margin-bottom: 0.6rem; display: block; }
+.mood-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--mm-navy);
+  margin-bottom: 0.3rem;
+}
+.mood-desc {
+  font-size: 0.78rem;
+  color: var(--mm-text-sub);
+  line-height: 1.5;
+}
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+
+        <!-- Header -->
+        <div class="text-center mb-5 anim-fade-up">
+          <p class="mm-section-label">How are you feeling?</p>
+          <h1 class="mm-heading" style="font-size: 2.2rem;">
+            Check in with<br/><em>yourself right now.</em>
+          </h1>
+          <p class="mm-subtext">
+            Pick the mood that best reflects how you feel in this moment.
+            There's no right or wrong answer.
+          </p>
+        </div>
+
+        <!-- Mood Selection Form -->
+        <form action="{{ url_for('checkin') }}" method="POST" id="checkinForm">
+          <div class="row g-3 mb-4">
+
+            <!-- SAD -->
+            <div class="col-sm-6 anim-fade-up anim-delay-1">
+              <label class="mood-option d-block">
+                <input type="radio" name="mood" value="sad" />
+                <div class="mood-card">
+                  <div class="mood-check"><i class="bi bi-check"></i></div>
+                  <span class="mood-emoji">🌧️</span>
+                  <div class="mood-label">Sad</div>
+                  <div class="mood-desc">Feeling low, heavy, or emotionally drained</div>
+                </div>
+              </label>
+            </div>
+
+            <!-- ANXIOUS -->
+            <div class="col-sm-6 anim-fade-up anim-delay-2">
+              <label class="mood-option d-block">
+                <input type="radio" name="mood" value="anxious" />
+                <div class="mood-card">
+                  <div class="mood-check"><i class="bi bi-check"></i></div>
+                  <span class="mood-emoji">🌀</span>
+                  <div class="mood-label">Anxious</div>
+                  <div class="mood-desc">Racing thoughts, worry, or tension in the body</div>
+                </div>
+              </label>
+            </div>
+
+            <!-- STRESSED -->
+            <div class="col-sm-6 anim-fade-up anim-delay-2">
+              <label class="mood-option d-block">
+                <input type="radio" name="mood" value="stressed" />
+                <div class="mood-card">
+                  <div class="mood-check"><i class="bi bi-check"></i></div>
+                  <span class="mood-emoji">⚡</span>
+                  <div class="mood-label">Stressed</div>
+                  <div class="mood-desc">Overwhelmed, under pressure, too much to handle</div>
+                </div>
+              </label>
+            </div>
+
+            <!-- HAPPY -->
+            <div class="col-sm-6 anim-fade-up anim-delay-3">
+              <label class="mood-option d-block">
+                <input type="radio" name="mood" value="happy" />
+                <div class="mood-card">
+                  <div class="mood-check"><i class="bi bi-check"></i></div>
+                  <span class="mood-emoji">✨</span>
+                  <div class="mood-label">Happy</div>
+                  <div class="mood-desc">Energized, content, grateful, or at peace</div>
+                </div>
+              </label>
+            </div>
+
+          </div>
+
+          <!-- Submit -->
+          <div class="text-center anim-fade-up anim-delay-3">
+            <button type="submit" class="btn-mm-primary px-5" id="submitBtn">
+              <i class="bi bi-arrow-right-circle me-2"></i>Get My Support
+            </button>
+            <p class="mm-subtext mt-3" style="font-size: 0.8rem;">
+              <i class="bi bi-lock me-1" style="color: var(--mm-text-light);"></i>
+              Your responses are stored only in your current session.
+            </p>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Require a mood selection before submit
+  document.getElementById('checkinForm').addEventListener('submit', function(e) {
+    const selected = document.querySelector('input[name="mood"]:checked');
+    if (!selected) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.textContent = '⚠️ Please select a mood first';
+      btn.style.background = '#DC2626';
+      setTimeout(() => {
+        btn.innerHTML = '<i class="bi bi-arrow-right-circle me-2"></i>Get My Support';
+        btn.style.background = '';
+      }, 2200);
+    }
+  });
+</script>
+{% endblock %}

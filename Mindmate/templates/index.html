@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════════════════════════════════
+     HERO SECTION
+══════════════════════════════════════════ -->
+<section class="py-5" style="background: linear-gradient(160deg, #F7F9FC 60%, #EBF5FF 100%);">
+  <div class="container py-4">
+    <div class="row align-items-center g-5">
+
+      <!-- Left: Copy -->
+      <div class="col-lg-6">
+        <p class="mm-section-label anim-fade-up">Daily Mental Wellness</p>
+
+        <h1 class="mm-heading anim-fade-up anim-delay-1" style="font-size: 2.8rem;">
+          A quiet moment<br/>
+          <em>just for you.</em>
+        </h1>
+
+        <p class="mm-subtext mb-4 anim-fade-up anim-delay-2" style="max-width: 420px;">
+          MindMate is a gentle daily check-in tool that listens to how you feel and
+          offers breathing exercises, calming visualizations, and motivational support —
+          no judgment, no pressure.
+        </p>
+
+        <div class="d-flex gap-3 flex-wrap anim-fade-up anim-delay-3">
+          <a href="{{ url_for('checkin') }}" class="btn-mm-primary">
+            <i class="bi bi-activity me-2"></i>Start Check-in
+          </a>
+          <a href="{{ url_for('about') }}" class="btn-mm-outline">
+            How it works
+          </a>
+        </div>
+
+        <!-- Last check-in badge -->
+        {% if last_mood %}
+        <div class="mt-4 anim-fade-up anim-delay-3">
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-2"
+               style="background: var(--mm-surface); border: 1px solid var(--mm-border);
+                      border-radius: 50px; font-size: 0.8rem; color: var(--mm-text-sub);">
+            <span>Last check-in:</span>
+            <strong class="text-navy">{{ last_mood_data.emoji }} {{ last_mood_data.label }}</strong>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Right: Feature cards -->
+      <div class="col-lg-6">
+        <div class="row g-3">
+          {% set features = [
+            ("bi-lungs", "#EBF5FF", "#00A8DC", "Breathing Exercises", "Guided 4-4-6 breathing to calm anxiety instantly."),
+            ("bi-tree", "#E8F5F0", "#059669", "Relaxation Scenes", "Text-based mindfulness visualizations for stress relief."),
+            ("bi-chat-quote", "#FEF3C7", "#D97706", "Motivational Quotes", "Curated quotes hand-picked for your mood."),
+            ("bi-journal-text", "#F3E8FF", "#7C3AED", "Mood History", "Track your emotional patterns over time."),
+          ] %}
+          {% for icon, bg, color, title, desc in features %}
+          <div class="col-sm-6 anim-fade-up" style="animation-delay: {{ loop.index * 0.08 }}s; opacity: 0;">
+            <div class="mm-card h-100" style="padding: 1.4rem;">
+              <div class="mb-2" style="width: 36px; height: 36px; background: {{ bg }};
+                   border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi {{ icon }}" style="color: {{ color }}; font-size: 1rem;"></i>
+              </div>
+              <p class="mb-1 fw-600" style="font-size: 0.88rem; font-weight: 600; color: var(--mm-navy);">{{ title }}</p>
+              <p class="mb-0" style="font-size: 0.8rem; color: var(--mm-text-sub);">{{ desc }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     RECENT HISTORY STRIP
+══════════════════════════════════════════ -->
+{% if recent_history %}
+<section class="py-4" style="border-top: 1px solid var(--mm-border);">
+  <div class="container">
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <span class="font-mono" style="font-size: 0.72rem; color: var(--mm-text-light); letter-spacing: 0.08em; text-transform: uppercase;">
+        Recent Check-ins
+      </span>
+      {% for entry in recent_history %}
+      <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
+                   background: var(--mm-surface); border: 1px solid var(--mm-border);
+                   border-radius: 50px; font-size: 0.78rem; color: var(--mm-text-sub);">
+        {{ entry.emoji }} {{ entry.label }}
+        <span style="color: var(--mm-text-light); font-size: 0.7rem;">{{ entry.timestamp.split('—')[0].strip() }}</span>
+      </span>
+      {% endfor %}
+      <a href="{{ url_for('history') }}" style="font-size: 0.78rem; color: var(--mm-cyan-soft); text-decoration: none; margin-left: auto;">
+        View all <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════════════ -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <p class="mm-section-label">Simple Process</p>
+      <h2 class="mm-heading" style="font-size: 1.8rem;">Three steps to feeling better</h2>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      {% set steps = [
+        ("01", "bi-cursor-fill", "Select your mood", "Choose from four emotional states that best describes how you feel right now."),
+        ("02", "bi-magic", "Get your response", "MindMate instantly tailors a supportive experience specifically for your current mood."),
+        ("03", "bi-graph-up", "Track your wellness", "Your mood history builds over time, helping you notice patterns and progress."),
+      ] %}
+      {% for num, icon, title, desc in steps %}
+      <div class="col-md-4">
+        <div class="mm-card text-center h-100">
+          <div class="font-mono mb-2" style="font-size: 0.7rem; color: var(--mm-cyan-soft); letter-spacing: 0.1em;">{{ num }}</div>
+          <i class="bi {{ icon }} mb-3" style="font-size: 1.5rem; color: var(--mm-navy);"></i>
+          <h6 class="fw-600 text-navy mb-2">{{ title }}</h6>
+          <p class="mm-subtext mb-0" style="font-size: 0.85rem;">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="{{ url_for('checkin') }}" class="btn-mm-cyan">
+        <i class="bi bi-play-fill me-1"></i> Begin Your Check-in
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

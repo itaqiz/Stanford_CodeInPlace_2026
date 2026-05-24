@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% block title %}Your Support — {{ mood_data.label }}{% endblock %}
+
+{% block extra_styles %}
+/* ── Breathing animation ── */
+@keyframes breathe {
+  0%, 100% { transform: scale(1);    opacity: 0.6; }
+  50%       { transform: scale(1.22); opacity: 1; }
+}
+
+.breath-orb {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,194,255,0.35) 0%, rgba(0,168,220,0.12) 100%);
+  border: 2px solid rgba(0, 194, 255, 0.35);
+  margin: 0 auto 1.5rem;
+  animation: breathe 8s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+/* ── Breathing step cards ── */
+.breath-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--mm-bg);
+  border: 1px solid var(--mm-border);
+  border-radius: var(--mm-radius-sm);
+  margin-bottom: 0.75rem;
+  transition: background 0.3s;
+}
+
+.breath-step.active-step {
+  background: var(--mm-calm-blue);
+  border-color: rgba(0, 194, 255, 0.35);
+}
+
+.breath-step-num {
+  width: 28px;
+  height: 28px;
+  background: var(--mm-navy);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  font-family: var(--mm-font-mono);
+}
+
+/* ── Relaxation scene ── */
+.scene-paragraph {
+  font-family: var(--mm-font-head);
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: var(--mm-text-main);
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--mm-border);
+}
+.scene-paragraph:last-child { border-bottom: none; }
+
+/* ── Quote block ── */
+.mm-quote-block {
+  border-left: 3px solid var(--mm-cyan-soft);
+  padding: 1rem 1.5rem;
+  background: var(--mm-calm-blue);
+  border-radius: 0 var(--mm-radius-sm) var(--mm-radius-sm) 0;
+  font-family: var(--mm-font-head);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--mm-navy);
+  line-height: 1.6;
+}
+
+/* ── Mood badge ── */
+.mood-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+/* ── Timer bar ── */
+.timer-bar {
+  height: 4px;
+  background: var(--mm-border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+.timer-fill {
+  height: 100%;
+  background: var(--mm-cyan-soft);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 1s linear;
+}
+
+/* ── Mood color overrides ── */
+{% if mood == 'sad' %}
+.mood-badge { background: #EFF6FF; color: #1D4ED8; }
+{% elif mood == 'anxious' %}
+.mood-badge { background: #F5F3FF; color: #6D28D9; }
+{% elif mood == 'stressed' %}
+.mood-badge { background: #FFFBEB; color: #B45309; }
+{% elif mood == 'happy' %}
+.mood-badge { background: #ECFDF5; color: #047857; }
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+
+        <!-- ── Header ── -->
+        <div class="mb-4 anim-fade-up">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <a href="{{ url_for('checkin') }}" class="mm-nav-link ps-0" style="color: var(--mm-text-sub) !important;">
+              <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+            <span class="mood-badge">{{ mood_data.emoji }} Feeling {{ mood_data.label }}</span>
+          </div>
+
+          <p class="mm-section-label">Your Support Response</p>
+          <h1 class="mm-heading" style="font-size: 2rem;">
+            {% if mood == 'sad' %}We see you. You're not alone.
+            {% elif mood == 'anxious' %}Let's slow down together.
+            {% elif mood == 'stressed' %}Time to reset and breathe.
+            {% elif mood == 'happy' %}Keep that energy going.
+            {% endif %}
+          </h1>
+
+          <p class="mm-subtext">{{ mood_data.support_message }}</p>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             SAD → Motivational Quotes
+        ══════════════════════════════════════ -->
+        {% if mood == 'sad' %}
+        <div class="mm-card mb-4 anim-fade-up anim-delay-1">
+          <p class="mm-section-label mb-3">Your Quote for Today</p>
+          <div class="mm-quote-block mb-3">
+            "{{ random_quote }}"
+          </div>
+        </div>
+
+        <div class="mm-card mb-4 anim-fade-up anim-delay-2">
+          <h6 class="fw-600 text-navy mb-3"><i class="bi bi-lightbulb me-2 text-cyan"></i>Gentle Suggestion</h6>
+          <p class="mm-subtext mb-0">{{ mood_data.tip }}</p>
+        </div>
+
+        <div class="mm-card anim-fade-up anim-delay-3" style="background: #EFF6FF; border-color: #BFDBFE;">
+          <h6 class="fw-600 mb-2" style="color: #1D4ED8;">More quotes to carry with you</h6>
+          {% for q in mood_data.quotes[:3] %}
+            {% if q != random_quote %}
+            <p class="mb-2" style="font-size: 0.85rem; color: #374151; font-style: italic; padding-left: 0.75rem; border-left: 2px solid #93C5FD;">
+              "{{ q }}"
+            </p>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- ══════════════════════════════════════
+             ANXIOUS → Breathing Exercise
+        ══════════════════════════════════════ -->
+        {% elif mood == 'anxious' %}
+        <div class="mm-card mb-4 anim-fade-up anim-delay-1" style="text-align: center;">
+          <p class="mm-section-label mb-3">4 · 4 · 6 · 2 Breathing Method</p>
+          <div class="breath-orb" id="breathOrb">🫁</div>
+          <p id="breathLabel" style="font-size: 0.82rem; font-weight: 600; color: var(--mm-cyan-soft); letter-spacing: 0.1em; text-transform: uppercase;">
+            Press Start to Begin
+          </p>
+          <div class="timer-bar mx-auto mt-2" style="max-width: 200px;">
+            <div class="timer-fill" id="timerFill"></div>
+          </div>
+          <button class="btn-mm-outline mt-3" id="breathBtn" onclick="startBreathing()">
+            <i class="bi bi-play-fill me-1"></i> Start Breathing
+          </button>
+        </div>
+
+        <div class="mm-card mb-4 anim-fade-up anim-delay-2">
+          <p class="mm-section-label mb-3">Step-by-Step Guide</p>
+          {% for step in mood_data.breathing_steps %}
+          <div class="breath-step" id="step{{ step.step }}">
+            <div class="breath-step-num">{{ step.step }}</div>
+            <div>
+              <div class="fw-600" style="font-size: 0.88rem; color: var(--mm-navy);">
+                {{ step.action }}
+                <span class="font-mono ms-2" style="font-size: 0.72rem; color: var(--mm-text-light);">{{ step.duration }}s</span>
+              </div>
+              <div class="mm-subtext" style="font-size: 0.82rem;">{{ step.instruction }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="mm-card anim-fade-up anim-delay-3">
+          <h6 class="fw-600 text-navy mb-2"><i class="bi bi-info-circle me-2 text-cyan"></i>Why this works</h6>
+          <p class="mm-subtext mb-0">{{ mood_data.tip }}</p>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             STRESSED → Relaxation Scene
+        ══════════════════════════════════════ -->
+        {% elif mood == 'stressed' %}
+        <div class="mm-card mb-4 anim-fade-up anim-delay-1">
+          <p class="mm-section-label mb-2">Guided Visualization</p>
+          <h5 class="font-serif text-navy mb-3" style="font-size: 1.2rem;">
+            🌲 {{ mood_data.relaxation_scene.title }}
+          </h5>
+          {% for para in mood_data.relaxation_scene.paragraphs %}
+          <p class="scene-paragraph">{{ para }}</p>
+          {% endfor %}
+        </div>
+
+        <div class="mm-card anim-fade-up anim-delay-2">
+          <h6 class="fw-600 text-navy mb-2"><i class="bi bi-pencil me-2 text-cyan"></i>Next Step</h6>
+          <p class="mm-subtext mb-0">{{ mood_data.tip }}</p>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             HAPPY → Positive Reinforcement
+        ══════════════════════════════════════ -->
+        {% elif mood == 'happy' %}
+        <div class="mm-card mb-4 anim-fade-up anim-delay-1" style="background: #ECFDF5; border-color: #A7F3D0; text-align: center; padding: 2.5rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
+          <h5 class="font-serif text-navy mb-2">You're doing wonderfully.</h5>
+          <p class="mm-subtext">This is the energy that moves things forward. You've shown up for yourself today — that matters more than you know.</p>
+        </div>
+
+        <div class="mm-card mb-4 anim-fade-up anim-delay-2">
+          <p class="mm-section-label mb-3">Your Quote for Today</p>
+          <div class="mm-quote-block" style="border-left-color: #34D399; background: #F0FDF4;">
+            "{{ random_quote }}"
+          </div>
+        </div>
+
+        <div class="mm-card anim-fade-up anim-delay-3">
+          <h6 class="fw-600 text-navy mb-2"><i class="bi bi-bookmark-check me-2" style="color: #059669;"></i>Anchor this moment</h6>
+          <p class="mm-subtext mb-0">{{ mood_data.tip }}</p>
+        </div>
+        {% endif %}
+
+        <!-- ── Action Buttons ── -->
+        <div class="d-flex gap-3 mt-4 flex-wrap justify-content-center anim-fade-up anim-delay-3">
+          <a href="{{ url_for('checkin') }}" class="btn-mm-primary">
+            <i class="bi bi-arrow-repeat me-2"></i>Check-in Again
+          </a>
+          <a href="{{ url_for('history') }}" class="btn-mm-outline">
+            <i class="bi bi-journal me-2"></i>View History
+          </a>
+          <a href="{{ url_for('index') }}" class="btn-mm-outline">
+            <i class="bi bi-house me-2"></i>Home
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if mood == 'anxious' %}
+<script>
+  // ── 4-4-6-2 Breathing exercise controller ──
+  const STEPS = [
+    { label: "BREATHE IN",  duration: 4, stepId: "step1" },
+    { label: "HOLD",        duration: 4, stepId: "step2" },
+    { label: "BREATHE OUT", duration: 6, stepId: "step3" },
+    { label: "HOLD",        duration: 2, stepId: "step4" },
+  ];
+
+  let running = false;
+  let currentTimeout = null;
+
+  function setActiveStep(stepId) {
+    document.querySelectorAll('.breath-step').forEach(el => el.classList.remove('active-step'));
+    if (stepId) document.getElementById(stepId)?.classList.add('active-step');
+  }
+
+  function animateTimer(duration) {
+    const fill = document.getElementById('timerFill');
+    fill.style.transition = 'none';
+    fill.style.width = '0%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        fill.style.transition = `width ${duration}s linear`;
+        fill.style.width = '100%';
+      });
+    });
+  }
+
+  async function runCycle() {
+    for (let i = 0; i < STEPS.length; i++) {
+      if (!running) return;
+      const s = STEPS[i];
+      document.getElementById('breathLabel').textContent = `${s.label} — ${s.duration}s`;
+      setActiveStep(s.stepId);
+      animateTimer(s.duration);
+      await new Promise(r => { currentTimeout = setTimeout(r, s.duration * 1000); });
+    }
+    if (running) runCycle();
+  }
+
+  function startBreathing() {
+    const btn = document.getElementById('breathBtn');
+    if (!running) {
+      running = true;
+      btn.innerHTML = '<i class="bi bi-stop-fill me-1"></i> Stop';
+      btn.classList.add('btn-mm-primary');
+      btn.classList.remove('btn-mm-outline');
+      runCycle();
+    } else {
+      running = false;
+      clearTimeout(currentTimeout);
+      btn.innerHTML = '<i class="bi bi-play-fill me-1"></i> Start Breathing';
+      btn.classList.remove('btn-mm-primary');
+      btn.classList.add('btn-mm-outline');
+      document.getElementById('breathLabel').textContent = 'Paused — press Start to resume';
+      setActiveStep(null);
+    }
+  }
+</script>
+{% endif %}
+{% endblock %}

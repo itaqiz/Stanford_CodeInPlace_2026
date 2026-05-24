@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+
+        <div class="mb-5 anim-fade-up">
+          <p class="mm-section-label">About This Project</p>
+          <h1 class="mm-heading" style="font-size: 2rem;">What is MindMate?</h1>
+        </div>
+
+        <div class="mm-card mb-4 anim-fade-up anim-delay-1">
+          <p class="mm-subtext">
+            <strong>MindMate</strong> is a minimal, thoughtfully designed emotional wellness check-in tool.
+            It was built to provide a calm, judgment-free space for daily self-reflection — especially
+            for students, developers, and knowledge workers who rarely pause to check in with themselves.
+          </p>
+          <p class="mm-subtext mb-0">
+            MindMate is <strong>not medical advice</strong>. It's a digital wellness companion — like a
+            thoughtful friend who listens, suggests a breathing exercise, or shares a quote when you need it most.
+          </p>
+        </div>
+
+        <div class="mm-card mb-4 anim-fade-up anim-delay-2">
+          <h6 class="fw-600 text-navy mb-3"><i class="bi bi-code-slash me-2 text-cyan"></i>Technical Details</h6>
+          <div class="row g-3">
+            {% set tech = [
+              ("Backend", "Python · Flask · Jinja2"),
+              ("Frontend", "Bootstrap 5 · Custom CSS · Vanilla JS"),
+              ("Storage", "Flask Session · In-memory list"),
+              ("Fonts", "DM Serif Display · DM Sans · JetBrains Mono"),
+              ("Project", "Stanford Code in Place 2026 — Final Project"),
+              ("Author", "Muhammad Taqui · iTaqiZ | Pakistan"),
+            ] %}
+            {% for label, value in tech %}
+            <div class="col-sm-6">
+              <div style="background: var(--mm-bg); border-radius: var(--mm-radius-sm); padding: 0.75rem 1rem;">
+                <div class="font-mono" style="font-size: 0.68rem; color: var(--mm-text-light); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px;">{{ label }}</div>
+                <div style="font-size: 0.85rem; font-weight: 500; color: var(--mm-navy);">{{ value }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="mm-card mb-4 anim-fade-up anim-delay-3" style="background: #FEF3C7; border-color: #FDE68A;">
+          <h6 class="fw-600 mb-2" style="color: #92400E;"><i class="bi bi-exclamation-triangle me-2"></i>Important Disclaimer</h6>
+          <p class="mb-0" style="font-size: 0.85rem; color: #78350F;">
+            MindMate is a student-built wellness tool and is not a substitute for professional
+            mental health care. If you are experiencing a mental health crisis, please contact
+            a licensed professional or a crisis helpline in your region.
+          </p>
+        </div>
+
+        <div class="text-center anim-fade-up anim-delay-3">
+          <a href="{{ url_for('checkin') }}" class="btn-mm-primary me-3">
+            <i class="bi bi-activity me-2"></i>Start Check-in
+          </a>
+          <a href="https://github.com/itaqiz" target="_blank" class="btn-mm-outline">
+            <i class="bi bi-github me-2"></i>GitHub
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
